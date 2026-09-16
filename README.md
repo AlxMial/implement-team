@@ -50,6 +50,30 @@ fall back inline rather than skipping the step silently.
 3. **The frontend lane is binding** — a missed accessibility floor (rules 8, 9, 10, 17, 19)
    or a missing loading/empty/error state is a FAIL on its own, not a taste note.
 
+## Calling them by your own name
+
+The chain names are just skill names — if `/jinshi` means nothing to your team, alias it.
+A personal alias is one file, no fork needed:
+
+```bash
+mkdir -p ~/.claude/commands
+cat > ~/.claude/commands/feature.md <<'EOF'
+---
+description: Hard chain — spec, tickets, implement, review, record
+---
+Invoke the `jinshi` skill and follow it exactly.
+
+Task: $ARGUMENTS
+EOF
+```
+
+Now `/feature <task>` runs the hard chain. Same trick with `maomao` for the easy one.
+Put the file in `<project>/.claude/commands/` instead to make the name project-wide, or
+commit it so the whole team gets it.
+
+For a permanent team-wide rename, fork this repo and rename the skill directory **and**
+the `name:` field in its frontmatter — they must match.
+
 ## Teaching it
 
 `TEACHING.md` is a standalone walkthrough — concept, install, the skill files, the reasoning

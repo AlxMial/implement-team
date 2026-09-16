@@ -547,6 +547,34 @@ $ claude
 
 ---
 
+## ส่วนที่ 10 — ตั้งชื่อคำสั่งเอง
+
+`/jinshi` `/maomao` เป็นแค่ชื่อ skill ถ้าทีมไม่คุ้น ตั้งชื่อเองได้ ไม่ต้อง fork
+ทำเป็นไฟล์เดียว:
+
+```bash
+mkdir -p ~/.claude/commands
+cat > ~/.claude/commands/feature.md <<'EOF'
+---
+description: Hard chain — spec, tickets, implement, review, record
+---
+Invoke the `jinshi` skill and follow it exactly.
+
+Task: $ARGUMENTS
+EOF
+```
+
+จากนั้น `/feature <งาน>` = รัน hard chain ส่วน easy chain ก็ทำแบบเดียวกันแต่ชี้ไป `maomao`
+
+- อยากให้ชื่อนี้ใช้เฉพาะในโปรเจกต์ → วางไฟล์ไว้ที่ `<project>/.claude/commands/` แล้ว commit
+  ทั้งทีมจะได้ชื่อเดียวกัน
+- อยากเปลี่ยนชื่อถาวรทั้งทีม → fork repo นี้ แล้วเปลี่ยน **ชื่อโฟลเดอร์ skill** กับ
+  **`name:` ใน frontmatter** ให้ตรงกัน (ต้องตรงกันทั้งคู่ ไม่งั้นไม่โผล่)
+
+ข้อดีของวิธี alias คือชื่อเดิมยังอยู่ — เอกสารกับคนที่คุ้นชื่อเดิมยังใช้ต่อได้
+
+---
+
 # สรุปสำหรับคนสอน
 
 ถ้ามีเวลา 5 นาที พูดแค่ 3 ประโยคนี้พอ:
