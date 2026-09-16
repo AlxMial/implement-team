@@ -1,6 +1,7 @@
 # /feature และ /fix — เอกสารสอนฉบับเต็ม
 
 > อ่านไฟล์เดียวจบ สอนได้เลย ไม่ต้องเปิดไฟล์อื่นประกอบ
+> ทุกอย่างในเอกสารนี้อยู่ที่ **github.com/AlxMial/implement-team**
 > เวอร์ชันนี้คือ **Claude เขียนโค้ดเองล้วน** ไม่ต้องมี external worker หรือ CLI อะไรเพิ่ม
 > ติดตั้งเป็น plugin: `/plugin marketplace add AlxMial/implement-team`
 
@@ -295,96 +296,56 @@ easy chain.
 
 ---
 
-# ส่วนที่ 5 — prompt สำหรับให้ Claude สร้างเอง (ทางเลือก)
+# ส่วนที่ 5 — แก้ / fork repo
 
-ถ้าอยากได้ chain เวอร์ชันของตัวเองแทนการลง plugin — เช่น จะเปลี่ยนชื่อ หรือปรับให้เข้ากับ
-skill ชุดอื่น — เอาข้อความข้างล่างนี้ไปวางใน Claude Code แล้วมันจะสร้าง `SKILL.md` ให้ใหม่
-ข้อดีคือมันจะไล่เช็กว่า skill ที่อ้างถึงมีจริงในเครื่องนั้นไหม และปรับ path ให้ตรงกับของจริง
+ทุกอย่างที่สอนในเอกสารนี้อยู่ใน repo เดียว: **github.com/AlxMial/implement-team**
 
-~~~~~markdown
-# Prompt: สร้าง skill /feature และ /fix (เวอร์ชัน Claude เขียนเอง ไม่มี external worker)
+```
+.claude-plugin/plugin.json        ← ชื่อ, เวอร์ชัน, คำอธิบาย plugin
+.claude-plugin/marketplace.json   ← ทำให้ repo นี้เป็น marketplace ในตัว
+skills/feature/SKILL.md           ← hard chain
+skills/fix/SKILL.md               ← easy chain
+skills/scribe/SKILL.md            ← ตัวบันทึก changelog
+rules/*.md                        ← กฎ UI ที่ chain ใช้ gate
+README.md  TEACHING.md
+```
 
-> เอาข้อความใต้เส้น `---` ไปวางใน Claude Code ของเครื่องตัวเอง (พิมพ์ทีเดียวจบ)
+## แก้แล้วทดสอบก่อน push
 
-## ต้องมีก่อน (prerequisites)
-- skills ที่ chain เรียกใช้: `grill-with-docs`, `to-spec`, `to-tickets`, `implement`,
-  `code-review`, `scribe`
-- `ponytail` (plugin) — กันงาน over-engineer ระหว่าง implement
-- `frontend-design` + `impeccable` — ต้องมีถ้างานแตะ UI
-- ไฟล์กฎ UI: `~/.claude/rules/frontend-design-rules.md`
-  (ไม่มีก็ได้ — แต่ต้องแก้ Frontend lane ให้ชี้ไปที่กฎที่ตัวเองใช้จริง)
+clone แล้วลง plugin **จาก path ในเครื่อง** ได้เลย ไม่ต้อง push ขึ้น GitHub ก่อน:
 
----
+```bash
+git clone git@github.com:AlxMial/implement-team.git
+cd implement-team
+```
+```
+/plugin marketplace add ./implement-team      # ชี้ไปที่โฟลเดอร์ที่ clone มา
+/plugin install implement-team@implement-team
+```
 
-สร้าง global skill 2 ตัวใน `~/.claude/skills/` ให้หน่อย ตัวละ 1 ไฟล์ `SKILL.md`
-ไม่ต้องมีไฟล์อื่น ทั้งคู่ใส่ frontmatter `name`, `description`, และ
-`disable-model-invocation: true` (ให้เรียกด้วย `/` เท่านั้น ไม่ให้โมเดลเรียกเอง)
+แก้ไฟล์ → restart Claude Code → ทดสอบ → พอใจค่อย commit แล้ว push
+(ถ้าเคยลงจาก GitHub ไว้ ให้ `/plugin uninstall` ตัวเดิมก่อน กันสองตัวชนกัน)
 
-**แนวคิด:** ทั้งสองตัวไม่ใช่ agent ใหม่ — มันแค่ "ลำดับการเรียก skill ที่มีอยู่แล้ว"
-ให้รันตามลำดับใน session เดียวกัน ไม่ต้องสร้าง subagent เพิ่ม
-(`code-review` มี sub-agent ของมันเองอยู่แล้ว พอ)
+## fork เป็นของทีมตัวเอง
 
-## 1. `feature` — hard chain
-description: งานหลายขั้น/feature ใหม่/แก้ข้ามระบบ/requirement ยังไม่ชัด
-ลำดับ: `grill-with-docs` → `to-spec` → `to-tickets` → `implement` → `code-review` → `scribe`
+1. fork หรือ clone แล้วสร้าง repo ใหม่
+2. แก้ `.claude-plugin/marketplace.json` — เปลี่ยน `name` และ `owner` เป็นของทีม
+3. แก้ `rules/*.md` ให้เป็นมาตรฐาน UI ของทีม (path ใน SKILL.md ชี้เข้า plugin อยู่แล้ว ไม่ต้องแก้)
+4. push แล้วบอกทีมว่า `/plugin marketplace add <org>/<repo>`
 
-## 2. `fix` — easy chain
-description: งานเล็ก เข้าใจตรงกันแล้ว ข้ามการ grill และการแตก ticket
-ลำดับ: `to-spec` → `implement` → `code-review` → `scribe`
-ท้ายไฟล์เพิ่มข้อ **Escalate, don't force it**: ถ้าทำไปแล้วพบว่าต้อง grill หรือแตก ticket จริง ๆ
-ให้หยุดแล้วเสนอ `/feature` แทน อย่าดันต่อ
+อยากเปลี่ยนชื่อ chain ให้เปลี่ยน **ชื่อโฟลเดอร์** กับ **`name:` ใน frontmatter** ให้ตรงกัน
+(ไม่ตรงกัน = ไม่โผล่ใน `/`)
 
-## กฎที่ต้องมีเหมือนกันทั้งสองไฟล์
+## ปล่อยเวอร์ชันใหม่
 
-**เรียก skill พวกนี้จริง ๆ อย่าทำจากความจำ** — ทุกชื่อที่เป็น `code` ในไฟล์นี้คือ skill
-ที่ต้อง invoke ด้วย Skill tool จริง ๆ ไม่ใช่ "นึกว่าจำได้แล้วทำเอง" skill มีการอัปเดต
-และเนื้อหาข้างในยาวกว่าที่จำไว้เสมอ ถ้าเรียกไม่ได้/ไม่มีในเครื่อง ให้บอก user ตรง ๆ
-อย่าเงียบแล้วข้าม
+แก้ `version` ใน `plugin.json` ตาม semver แล้ว commit + push
+ฝั่งผู้ใช้อัปเดตด้วย `/plugin update implement-team`
 
-**`ponytail` ก่อนลงมือ implement ทุกครั้ง** — เรียกก่อนเขียนโค้ดบรรทัดแรก ให้มันคุม
-ไม่ให้ chain นี้ผลิต abstraction/boilerplate/dependency ที่ไม่มีใครขอ
-(ใครอยากให้ติดตลอด session ไม่ต้องเรียกซ้ำ ไปตั้งเป็น SessionStart hook แทนได้)
+## อยากได้เวอร์ชันของตัวเองโดยไม่ fork
 
-**No-tracker fallback** — ถ้าโปรเจกต์ไม่มี `docs/agents/issue-tracker.md`
-ให้ `to-spec` เขียนลง `.scratch/<feature-slug>/spec.md` และ `to-tickets` เขียนลง
-`.scratch/<feature-slug>/issues/` แทนการ publish ขึ้น tracker
-
-**Implement — Claude เขียนเองทั้งหมด**
-- `feature`: ไล่ทำ ticket ที่ blocker เคลียร์หมดแล้ว (frontier) ไปเรื่อย ๆ จนครบทุกใบ
-- ก่อนลงมือแต่ละ ticket/spec: อ่านมันก่อน แล้วไล่ codebase หา "รายชื่อไฟล์จริง" ที่จะแตะ
-  — `to-spec`/`to-tickets` ตั้งใจไม่ใส่ path มาให้
-- ทำทีละ ticket อย่ารวบหลายใบใน commit เดียว
-- **หลังแก้เสร็จ: อ่าน diff ของตัวเองซ้ำ และรัน typecheck/lint/test ของโปรเจกต์
-  เฉพาะส่วนที่แตะ** — ไม่มี output ไม่ถือว่าเสร็จ
-- แล้วค่อย commit ตามที่ `implement` ทำปกติ
-
-**Frontend lane (binding เมื่องานแตะ UI)** — ใส่เป็นหัวข้อของตัวเอง และใส่บรรทัดเตือน
-ไว้บนสุดของไฟล์ว่า "UI work? อ่าน Frontend lane ก่อนเริ่ม step 1"
-- trigger: ทุก step ที่วาง layout, สร้าง/แก้หน้าจอ, restyle UI เดิม (web, mobile,
-  LINE Mini App, kiosk, dashboard) — ไม่แน่ใจ = ถือว่า trigger
-- **ก่อนเขียน spec:** เรียก `frontend-design` และ `impeccable` แล้วสรุปหัวข้อ
-  `## Design direction` ลงใน spec: user, goal, primary action, information hierarchy
-  ตามด้วย token จริง — spacing scale (8px), type scale, colour token, radius scale,
-  component เดิมที่จะ reuse อ่าน token ที่โปรเจกต์มีอยู่ก่อนแล้วอ้างชื่อไฟล์
-  ห้ามคิด palette ใหม่ขนานกัน — คำว่า "spacing สม่ำเสมอ" ไม่ใช่ design direction ต้องเป็นค่าจริง
-- **ก่อน code-review:** รัน `impeccable` ทับ UI diff แล้ว gate กับ
-  `~/.claude/rules/frontend-design-rules.md` ทีละข้อ แบบ static (อ่าน markup, style, token
-  ไม่เปิด browser ไม่ screenshot) — พลาด accessibility floor (ข้อ 8, 9, 10, 17, 19)
-  หรือขาด loading/empty/error state = FAIL ในตัวมันเอง ต้องกลับไปแก้
-  ถ้าไม่ผิดกฎแต่ไม่ถูกใจ = note ไม่ใช่ FAIL เรื่องรสนิยมเป็นสิทธิ์ user
-
-**Review cap (สำคัญที่สุด)** — ถ้า `code-review` เจออะไร ให้แก้ **1 รอบ** แล้ว review
-ซ้ำ **1 รอบ** จบแค่นั้น ไม่ว่าผลจะออกมายังไง ห้ามวนต่อ แล้วรายงานผลให้ user
-(ข้อนี้มีเพราะ chain รุ่นก่อนเคยติดลูป reviewer ↔ builder 4 รอบโดยไม่ดีขึ้นเลย)
-
-**Self-gate** — chain นี้ Claude เป็นทั้งคนเขียนและคนตรวจ ซึ่งเป็นจุดอ่อนที่ต้องชดเชย:
-`code-review` ต้องรันเสมอ ห้ามข้ามเพราะ "ก็เราเขียนเอง" ให้พึ่ง sub-agent ของ
-`code-review` และเข้มกับตัวเองมากขึ้น ไม่ใช่ผ่อนลง
-
-**`scribe` รันเป็นขั้นสุดท้ายเสมอ** แม้ review cap จะตัดจบไปแล้ว — ยังมีเรื่องให้บันทึกอยู่ดี
-
-เขียนไฟล์ให้กระชับ เป็น bullet ไม่ต้องอธิบายยาว
-~~~~~
+เอา `SKILL.md` ทั้งสองไฟล์ในส่วนที่ 4 ให้ Claude แล้วบอกว่าจะเปลี่ยนอะไร
+(เช่น ตัดขั้น ticket ออก, เปลี่ยน tracker, เพิ่มขั้น deploy) แล้วให้มันเขียนไฟล์ลง
+`~/.claude/skills/<ชื่อ>/SKILL.md` ให้ — ได้ skill ส่วนตัวที่ไม่ผูกกับ plugin นี้
 
 ---
 
