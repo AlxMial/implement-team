@@ -1,10 +1,10 @@
 ---
-name: jinshi
-description: "Hard-task chain for multi-step work: grill the plan against the codebase/docs, spec it, break into tickets, implement, review, record. Use for new features, cross-cutting changes, or anything with unclear requirements. Global — works in any project."
+name: feature
+description: "Hard-task chain (/feature) for multi-step work: grill the plan against the codebase/docs, spec it, break into tickets, implement, review, record. Use for new features, cross-cutting changes, or anything with unclear requirements. Global — works in any project."
 disable-model-invocation: true
 ---
 
-# jinshi (hard chain)
+# feature (hard chain)
 
 > **UI work? Read the Frontend lane section below before step 1.** It is binding for
 > any step that lays out controls or builds a screen.
@@ -80,5 +80,5 @@ The review cap below still applies: fix once, re-review once.
 after that second review regardless of outcome — do not loop further. Report the result
 to the user and hand control back.
 
-If a step surfaces that this was actually small enough for `/maomao`, say so, but don't
+If a step surfaces that this was actually small enough for `/fix`, say so, but don't
 switch mid-chain — finish the current one.

@@ -5,9 +5,9 @@
   },
   "plugins": [
     {
-      "name": "jinshi-maomao",
+      "name": "implement-team",
       "source": "./",
-      "description": "/jinshi (hard chain) and /maomao (easy chain) — ordered skill chains with a review cap, a binding frontend lane, and a changelog scribe."
+      "description": "/feature (hard chain) and /fix (easy chain) — ordered skill chains with a review cap, a binding frontend lane, and a changelog scribe."
     }
   ]
 }

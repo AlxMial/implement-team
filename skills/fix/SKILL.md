@@ -1,10 +1,10 @@
 ---
-name: maomao
-description: "Easy-task chain for small, well-understood work: spec it, implement, review, record. Skips grilling and ticket breakdown. Global — works in any project."
+name: fix
+description: "Easy-task chain (/fix) for small, well-understood work: spec it, implement, review, record. Skips grilling and ticket breakdown. Global — works in any project."
 disable-model-invocation: true
 ---
 
-# maomao (easy chain)
+# fix (easy chain)
 
 > **UI work? Read the Frontend lane section below before step 1.** It is binding for
 > any step that lays out controls or builds a screen.
@@ -74,5 +74,5 @@ after that second review regardless of outcome — do not loop further. Report t
 to the user and hand control back.
 
 **Escalate, don't force it:** if partway through this turns out to need grilling or a
-ticket breakdown after all, stop and suggest `/jinshi` instead of pushing it through the
+ticket breakdown after all, stop and suggest `/feature` instead of pushing it through the
 easy chain.

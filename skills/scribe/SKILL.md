@@ -1,6 +1,6 @@
 ---
 name: scribe
-description: "Record what a /jinshi or /maomao run did into the project's Obsidian vault: one changelog note with goal, spec, what changed, and review outcome. Final step of both chains."
+description: "Record what a /feature or /fix run did into the project's Obsidian vault: one changelog note with goal, spec, what changed, and review outcome. Final step of both chains."
 ---
 
 # scribe

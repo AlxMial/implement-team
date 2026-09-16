@@ -1,4 +1,4 @@
-# jinshi / maomao — เอกสารสอนฉบับเต็ม
+# /feature และ /fix — เอกสารสอนฉบับเต็ม
 
 > อ่านไฟล์เดียวจบ สอนได้เลย ไม่ต้องเปิดไฟล์อื่นประกอบ
 > เวอร์ชันนี้คือ **Claude เขียนโค้ดเองล้วน** ไม่ต้องมี external worker หรือ CLI อะไรเพิ่ม
@@ -8,7 +8,7 @@
 
 # ส่วนที่ 1 — มันคืออะไร
 
-`/jinshi` และ `/maomao` คือ **slash command สองตัวที่สั่งให้ Claude เรียก skill ที่มีอยู่แล้ว
+`/feature` และ `/fix` คือ **slash command สองตัวที่สั่งให้ Claude เรียก skill ที่มีอยู่แล้ว
 ตามลำดับ** จบ. แค่นั้นจริง ๆ
 
 มันไม่ใช่:
@@ -24,14 +24,14 @@
 **ทำไมต้องมีสองตัว:** เพราะงานมีสองขนาด ถ้ามีตัวเดียวคนจะเลี่ยงใช้ตอนงานเล็ก
 (ขั้นตอนเยอะเกิน) แล้วสุดท้ายก็ไม่ได้ใช้เลย
 
-| | `/jinshi` (ยาก) | `/maomao` (ง่าย) |
+| | `/feature` (ยาก) | `/fix` (ง่าย) |
 |---|---|---|
 | ใช้กับ | feature ใหม่, แก้ข้ามระบบ, requirement ยังไม่ชัด | งานเล็ก เข้าใจตรงกันแล้ว |
 | ลำดับ | grill-with-docs → to-spec → to-tickets → implement → code-review → scribe | to-spec → implement → code-review → scribe |
 | ต่างกันตรง | มีขั้น "ซัก" และ "แตก ticket" | ตัดสองขั้นนั้นทิ้ง |
 
-ชื่อมาจากตัวละครใน *ยาผีบอกเภสัชกรสาว* (jinshi = คนที่คิดเยอะ, maomao = คนที่ลงมือ)
-ตั้งชื่ออะไรก็ได้ แต่อย่าตั้งเป็น `/hard` `/easy` — เวลาพิมพ์จะไปชนกับ skill อื่น
+ชื่อ `/feature` กับ `/fix` เลือกให้กลาง ๆ จำง่าย ไม่ผูกกับทีมใดทีมหนึ่ง
+ไม่ชอบก็ตั้งชื่อเองได้ ไม่ต้อง fork — วิธีอยู่ในส่วนที่ 10
 
 ## ขั้นแต่ละขั้นทำอะไร
 
@@ -70,7 +70,7 @@ chain ใช้มัน **สองจุด** และเป็นสอง�
 
 1. **มันขอ `PRODUCT.md` ในโปรเจกต์** ถ้าไม่มี มันจะหยุดแล้วพาไป flow `init` ก่อน
    ซึ่งจะทำให้ chain สะดุดกลางคัน — โปรเจกต์ใหม่ให้รัน `impeccable init` แยกให้จบก่อน
-   แล้วค่อยเริ่ม `/jinshi`
+   แล้วค่อยเริ่ม `/feature`
 2. **path ใน SKILL.md ของมันเขียนแบบ project-local** (`node .claude/skills/impeccable/...`)
    แต่เราลงไว้ที่ `~/.claude/skills/` ถ้า script รันไม่ผ่าน ให้ Claude ใช้ path เต็ม
    `~/.claude/skills/impeccable/scripts/context.mjs` แทน
@@ -86,12 +86,12 @@ chain ใช้มัน **สองจุด** และเป็นสอง�
 
 ```
 /plugin marketplace add AlxMial/implement-team
-/plugin install jinshi-maomao@implement-team
+/plugin install implement-team@implement-team
 ```
 
-restart Claude Code แล้วพิมพ์ `/jinshi` หรือ `/maomao` ได้เลย
+restart Claude Code แล้วพิมพ์ `/feature` หรือ `/fix` ได้เลย
 ได้มาทั้ง chain สองตัว + `scribe` + ไฟล์กฎ UI (อยู่ในตัว plugin ไม่ต้องก๊อปแยก)
-อัปเดตภายหลังด้วย `/plugin update jinshi-maomao`
+อัปเดตภายหลังด้วย `/plugin update implement-team`
 
 **2. ลง skill ที่ chain เรียกใช้ (ของคนอื่น ไม่ได้แถมมาใน plugin)**
 
@@ -107,7 +107,7 @@ restart Claude Code แล้วพิมพ์ `/jinshi` หรือ `/maomao`
 (มีตารางอยู่ในตัว `SKILL.md` ส่วนที่ 4) ไม่ใช่เงียบแล้วข้ามขั้น
 แต่ยิ่งขาดมาก คุณภาพยิ่งตก โดยเฉพาะ `code-review` กับ `impeccable`
 
-**เช็กก่อนไปต่อ** — พิมพ์ `/` ต้องเห็น `jinshi` กับ `maomao` ถ้าไม่เห็นแปลว่ายังไม่ได้ restart
+**เช็กก่อนไปต่อ** — พิมพ์ `/` ต้องเห็น `feature` กับ `fix` ถ้าไม่เห็นแปลว่ายังไม่ได้ restart
 
 ---
 
@@ -115,16 +115,16 @@ restart Claude Code แล้วพิมพ์ `/jinshi` หรือ `/maomao`
 
 ลง plugin แล้วได้สองไฟล์นี้อัตโนมัติ ที่แปะไว้เพื่ออ่านตอนสอนโดยไม่ต้องเปิดไฟล์
 
-## `skills/jinshi/SKILL.md`
+## `skills/feature/SKILL.md`
 
 ~~~~~markdown
 ---
-name: jinshi
-description: "Hard-task chain for multi-step work: grill the plan against the codebase/docs, spec it, break into tickets, implement, review, record. Use for new features, cross-cutting changes, or anything with unclear requirements. Global — works in any project."
+name: feature
+description: "Hard-task chain (/feature) for multi-step work: grill the plan against the codebase/docs, spec it, break into tickets, implement, review, record. Use for new features, cross-cutting changes, or anything with unclear requirements. Global — works in any project."
 disable-model-invocation: true
 ---
 
-# jinshi (hard chain)
+# feature (hard chain)
 
 > **UI work? Read the Frontend lane section below before step 1.** It is binding for
 > any step that lays out controls or builds a screen.
@@ -200,20 +200,20 @@ The review cap below still applies: fix once, re-review once.
 after that second review regardless of outcome — do not loop further. Report the result
 to the user and hand control back.
 
-If a step surfaces that this was actually small enough for `/maomao`, say so, but don't
+If a step surfaces that this was actually small enough for `/fix`, say so, but don't
 switch mid-chain — finish the current one.
 ~~~~~
 
-## `skills/maomao/SKILL.md`
+## `skills/fix/SKILL.md`
 
 ~~~~~markdown
 ---
-name: maomao
-description: "Easy-task chain for small, well-understood work: spec it, implement, review, record. Skips grilling and ticket breakdown. Global — works in any project."
+name: fix
+description: "Easy-task chain (/fix) for small, well-understood work: spec it, implement, review, record. Skips grilling and ticket breakdown. Global — works in any project."
 disable-model-invocation: true
 ---
 
-# maomao (easy chain)
+# fix (easy chain)
 
 > **UI work? Read the Frontend lane section below before step 1.** It is binding for
 > any step that lays out controls or builds a screen.
@@ -283,7 +283,7 @@ after that second review regardless of outcome — do not loop further. Report t
 to the user and hand control back.
 
 **Escalate, don't force it:** if partway through this turns out to need grilling or a
-ticket breakdown after all, stop and suggest `/jinshi` instead of pushing it through the
+ticket breakdown after all, stop and suggest `/feature` instead of pushing it through the
 easy chain.
 ~~~~~
 
@@ -302,7 +302,7 @@ skill ชุดอื่น — เอาข้อความข้างล่
 ข้อดีคือมันจะไล่เช็กว่า skill ที่อ้างถึงมีจริงในเครื่องนั้นไหม และปรับ path ให้ตรงกับของจริง
 
 ~~~~~markdown
-# Prompt: สร้าง skill /jinshi และ /maomao (เวอร์ชัน Claude เขียนเอง ไม่มี external worker)
+# Prompt: สร้าง skill /feature และ /fix (เวอร์ชัน Claude เขียนเอง ไม่มี external worker)
 
 > เอาข้อความใต้เส้น `---` ไปวางใน Claude Code ของเครื่องตัวเอง (พิมพ์ทีเดียวจบ)
 
@@ -324,15 +324,15 @@ skill ชุดอื่น — เอาข้อความข้างล่
 ให้รันตามลำดับใน session เดียวกัน ไม่ต้องสร้าง subagent เพิ่ม
 (`code-review` มี sub-agent ของมันเองอยู่แล้ว พอ)
 
-## 1. `jinshi` — hard chain
+## 1. `feature` — hard chain
 description: งานหลายขั้น/feature ใหม่/แก้ข้ามระบบ/requirement ยังไม่ชัด
 ลำดับ: `grill-with-docs` → `to-spec` → `to-tickets` → `implement` → `code-review` → `scribe`
 
-## 2. `maomao` — easy chain
+## 2. `fix` — easy chain
 description: งานเล็ก เข้าใจตรงกันแล้ว ข้ามการ grill และการแตก ticket
 ลำดับ: `to-spec` → `implement` → `code-review` → `scribe`
 ท้ายไฟล์เพิ่มข้อ **Escalate, don't force it**: ถ้าทำไปแล้วพบว่าต้อง grill หรือแตก ticket จริง ๆ
-ให้หยุดแล้วเสนอ `/jinshi` แทน อย่าดันต่อ
+ให้หยุดแล้วเสนอ `/feature` แทน อย่าดันต่อ
 
 ## กฎที่ต้องมีเหมือนกันทั้งสองไฟล์
 
@@ -350,7 +350,7 @@ description: งานเล็ก เข้าใจตรงกันแล้
 `.scratch/<feature-slug>/issues/` แทนการ publish ขึ้น tracker
 
 **Implement — Claude เขียนเองทั้งหมด**
-- `jinshi`: ไล่ทำ ticket ที่ blocker เคลียร์หมดแล้ว (frontier) ไปเรื่อย ๆ จนครบทุกใบ
+- `feature`: ไล่ทำ ticket ที่ blocker เคลียร์หมดแล้ว (frontier) ไปเรื่อย ๆ จนครบทุกใบ
 - ก่อนลงมือแต่ละ ticket/spec: อ่านมันก่อน แล้วไล่ codebase หา "รายชื่อไฟล์จริง" ที่จะแตะ
   — `to-spec`/`to-tickets` ตั้งใจไม่ใส่ path มาให้
 - ทำทีละ ticket อย่ารวบหลายใบใน commit เดียว
@@ -491,7 +491,7 @@ LINE Mini App, kiosk ฯลฯ ใช้ตอนที่ 20 ข้อตอบ
 
 ```
 $ claude
-> /maomao เพิ่มปุ่ม export CSV ในหน้ารายการลูกค้า
+> /fix เพิ่มปุ่ม export CSV ในหน้ารายการลูกค้า
 ```
 
 สิ่งที่จะเกิด:
@@ -505,8 +505,8 @@ $ claude
 **ระหว่างทางเราทำอะไรได้บ้าง:** กด Esc แทรกได้ตลอด chain ไม่ได้ล็อกอะไร
 มันแค่เป็นลำดับที่ Claude ถืออยู่
 
-**เลือกผิดตัวทำไง:** ถ้า `/maomao` ไปเจอว่างานใหญ่กว่าที่คิด มันจะหยุดแล้วเสนอ `/jinshi`
-ส่วน `/jinshi` ที่เจอว่างานเล็กเกิน จะบอกเฉย ๆ แต่ทำต่อจนจบ — ไม่สลับ chain กลางคัน
+**เลือกผิดตัวทำไง:** ถ้า `/fix` ไปเจอว่างานใหญ่กว่าที่คิด มันจะหยุดแล้วเสนอ `/feature`
+ส่วน `/feature` ที่เจอว่างานเล็กเกิน จะบอกเฉย ๆ แต่ทำต่อจนจบ — ไม่สลับ chain กลางคัน
 เพราะสลับแล้วของที่ทำไปแล้วจะค้าง
 
 ---
@@ -549,22 +549,22 @@ $ claude
 
 ## ส่วนที่ 10 — ตั้งชื่อคำสั่งเอง
 
-`/jinshi` `/maomao` เป็นแค่ชื่อ skill ถ้าทีมไม่คุ้น ตั้งชื่อเองได้ ไม่ต้อง fork
+`/feature` `/fix` เป็นแค่ชื่อ skill ถ้าไม่ชอบ หรือไปชนกับ plugin อื่น ตั้งชื่อเองได้ ไม่ต้อง fork
 ทำเป็นไฟล์เดียว:
 
 ```bash
 mkdir -p ~/.claude/commands
-cat > ~/.claude/commands/feature.md <<'EOF'
+cat > ~/.claude/commands/ship.md <<'EOF'
 ---
 description: Hard chain — spec, tickets, implement, review, record
 ---
-Invoke the `jinshi` skill and follow it exactly.
+Invoke the `feature` skill and follow it exactly.
 
 Task: $ARGUMENTS
 EOF
 ```
 
-จากนั้น `/feature <งาน>` = รัน hard chain ส่วน easy chain ก็ทำแบบเดียวกันแต่ชี้ไป `maomao`
+จากนั้น `/ship <งาน>` = รัน hard chain ส่วน easy chain ก็ทำแบบเดียวกันแต่ชี้ไป `fix`
 
 - อยากให้ชื่อนี้ใช้เฉพาะในโปรเจกต์ → วางไฟล์ไว้ที่ `<project>/.claude/commands/` แล้ว commit
   ทั้งทีมจะได้ชื่อเดียวกัน

@@ -1,7 +1,7 @@
 {
-  "name": "jinshi-maomao",
+  "name": "implement-team",
   "version": "1.0.0",
-  "description": "Two slash commands that run your existing skills in a fixed order: /jinshi for hard multi-step work, /maomao for small well-understood work. Plus scribe and the UI rule set they gate against.",
+  "description": "Two slash commands that run your existing skills in a fixed order: /feature for hard multi-step work, /fix for small well-understood work. Plus scribe and the UI rule set they gate against.",
   "author": {
     "name": "AlxMial"
   },

@@ -1,4 +1,4 @@
-# jinshi / maomao
+# implement-team
 
 Two slash commands that run the skills you already have **in a fixed order**, so a piece of
 work always gets spec'd, built, reviewed and recorded — instead of Claude jumping straight
@@ -6,7 +6,7 @@ to code and you remembering the rest by hand.
 
 They are not agents, not a framework, not code. Two markdown files, ~70 lines each.
 
-| | `/jinshi` (hard chain) | `/maomao` (easy chain) |
+| | `/feature` (hard chain) | `/fix` (easy chain) |
 |---|---|---|
 | for | new features, cross-cutting changes, unclear requirements | small, well-understood work |
 | order | grill-with-docs → to-spec → to-tickets → implement → code-review → scribe | to-spec → implement → code-review → scribe |
@@ -15,14 +15,14 @@ They are not agents, not a framework, not code. Two markdown files, ~70 lines ea
 
 ```
 /plugin marketplace add AlxMial/implement-team
-/plugin install jinshi-maomao@implement-team
+/plugin install implement-team@implement-team
 ```
 
-Restart Claude Code, then type `/jinshi` or `/maomao`.
+Restart Claude Code, then type `/feature` or `/fix`.
 
 ## What's in the box
 
-- `skills/jinshi`, `skills/maomao` — the two chains
+- `skills/feature`, `skills/fix` — the two chains
 - `skills/scribe` — writes one changelog note per run into the project's Obsidian vault
 - `rules/frontend-design-rules.md` — the 20 rules the frontend lane gates against
 - `rules/ux-ui-design-rules.md` — the long form (70 rules) for when 20 isn't enough
@@ -52,22 +52,22 @@ fall back inline rather than skipping the step silently.
 
 ## Calling them by your own name
 
-The chain names are just skill names — if `/jinshi` means nothing to your team, alias it.
+The chain names are just skill names — if `/feature` and `/fix` clash with something else you use, alias them.
 A personal alias is one file, no fork needed:
 
 ```bash
 mkdir -p ~/.claude/commands
-cat > ~/.claude/commands/feature.md <<'EOF'
+cat > ~/.claude/commands/ship.md <<'EOF'
 ---
 description: Hard chain — spec, tickets, implement, review, record
 ---
-Invoke the `jinshi` skill and follow it exactly.
+Invoke the `feature` skill and follow it exactly.
 
 Task: $ARGUMENTS
 EOF
 ```
 
-Now `/feature <task>` runs the hard chain. Same trick with `maomao` for the easy one.
+Now `/ship <task>` runs the hard chain. Same trick with `fix` for the easy one.
 Put the file in `<project>/.claude/commands/` instead to make the name project-wide, or
 commit it so the whole team gets it.
 
