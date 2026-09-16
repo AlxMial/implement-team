@@ -1,0 +1,11 @@
+{
+  "name": "jinshi-maomao",
+  "owner": { "name": "AlxMial" },
+  "plugins": [
+    {
+      "name": "jinshi-maomao",
+      "source": "./",
+      "description": "/jinshi (hard chain) and /maomao (easy chain) — ordered skill chains with a review cap, a binding frontend lane, and a changelog scribe."
+    }
+  ]
+}
