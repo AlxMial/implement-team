@@ -2,7 +2,15 @@
   "name": "jinshi-maomao",
   "version": "1.0.0",
   "description": "Two slash commands that run your existing skills in a fixed order: /jinshi for hard multi-step work, /maomao for small well-understood work. Plus scribe and the UI rule set they gate against.",
-  "author": { "name": "AlxMial" },
-  "homepage": "https://github.com/AlxMial/jinshi-maomao",
-  "keywords": ["workflow", "spec", "code-review", "frontend", "changelog"]
+  "author": {
+    "name": "AlxMial"
+  },
+  "homepage": "https://github.com/AlxMial/implement-team",
+  "keywords": [
+    "workflow",
+    "spec",
+    "code-review",
+    "frontend",
+    "changelog"
+  ]
 }

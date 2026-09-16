@@ -14,8 +14,8 @@ They are not agents, not a framework, not code. Two markdown files, ~70 lines ea
 ## Install
 
 ```
-/plugin marketplace add AlxMial/jinshi-maomao
-/plugin install jinshi-maomao@jinshi-maomao
+/plugin marketplace add AlxMial/implement-team
+/plugin install jinshi-maomao@implement-team
 ```
 
 Restart Claude Code, then type `/jinshi` or `/maomao`.

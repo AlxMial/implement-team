@@ -2,7 +2,7 @@
 
 > อ่านไฟล์เดียวจบ สอนได้เลย ไม่ต้องเปิดไฟล์อื่นประกอบ
 > เวอร์ชันนี้คือ **Claude เขียนโค้ดเองล้วน** ไม่ต้องมี external worker หรือ CLI อะไรเพิ่ม
-> ติดตั้งเป็น plugin: `/plugin marketplace add AlxMial/jinshi-maomao`
+> ติดตั้งเป็น plugin: `/plugin marketplace add AlxMial/implement-team`
 
 ---
 
@@ -85,8 +85,8 @@ chain ใช้มัน **สองจุด** และเป็นสอง�
 **1. ลง plugin (2 คำสั่ง)**
 
 ```
-/plugin marketplace add AlxMial/jinshi-maomao
-/plugin install jinshi-maomao@jinshi-maomao
+/plugin marketplace add AlxMial/implement-team
+/plugin install jinshi-maomao@implement-team
 ```
 
 restart Claude Code แล้วพิมพ์ `/jinshi` หรือ `/maomao` ได้เลย

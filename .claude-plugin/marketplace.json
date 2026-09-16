@@ -1,6 +1,8 @@
 {
-  "name": "jinshi-maomao",
-  "owner": { "name": "AlxMial" },
+  "name": "implement-team",
+  "owner": {
+    "name": "AlxMial"
+  },
   "plugins": [
     {
       "name": "jinshi-maomao",
