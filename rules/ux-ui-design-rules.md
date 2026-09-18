@@ -1815,9 +1815,17 @@ Accessibility floors — §13 touch targets, §35 contrast, §36 focus, §33 nev
 §14 real labels — are not tradeable for a smaller diff.
 
 **Stage 3a — guardian.** Gates against §64 item by item and §65, reading the markup, styles
-and tokens the diff produced — no browser, no screenshots (decision 2026-09-09: chain
-verification is internal; the rendered screen is the user's own eyes at 3a′). Contrast and
-target size are computed from the actual token values, not eyeballed. A
+and tokens the diff produced. Contrast and target size are computed from the actual token
+values, not eyeballed — that part of the 2026-09-09 decision stands, because a computed
+ratio beats a screenshot.
+
+What that decision got wrong, **amended 2026-09-17**, is the half that said "no browser"
+and handed the rendered screen to the user's own eyes at 3a′. That made every runtime
+defect the user's job to find, one at a time, after the chain had already declared itself
+done. Whether the code RUNS is now part of 3a: the page is loaded once with the change
+live, with any stored state the change depends on, and the console must be empty. 3a′
+stays what it always should have been — the user's call on TASTE (§66), not the only
+place anyone notices the screen is broken. A
 violation of an accessibility floor (§13, §33, §35, §36, §14) is a FAIL on its own. So is a
 missing empty / loading / error state, and so is §57 visual noise substituting for
 hierarchy. Aesthetic disagreement that breaks no rule here is a note, not a FAIL — §66 and

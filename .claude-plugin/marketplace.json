@@ -7,7 +7,8 @@
     {
       "name": "implement-team",
       "source": "./",
-      "description": "/feature (hard chain) and /fix (easy chain) — ordered skill chains with a review cap, a binding frontend lane, and a changelog scribe."
+      "description": "/feature (hard chain) and /fix (easy chain) — ordered skill chains with a step 0 memory read, a review cap, a binding frontend lane, browser runtime verification, and a changelog scribe."
     }
-  ]
+  ],
+  "description": "Ordered skill chains for Claude Code: /feature for hard multi-step work, /fix for small work — with a review cap, a binding frontend lane, browser runtime verification, and a changelog scribe."
 }

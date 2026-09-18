@@ -41,12 +41,25 @@
 | `grill-with-docs` | ซัก plan กับ codebase และ doc ที่มีอยู่ ก่อนเขียนอะไรลงไป | จับ requirement ที่ขัดกับของเดิมตั้งแต่ก่อนเสียเวลาเขียน |
 | `to-spec` | สรุปบทสนทนาเป็น spec (ไม่สัมภาษณ์ซ้ำ) | มีที่อ้างอิงว่า "ตกลงกันว่าอะไร" ตอน review |
 | `to-tickets` | แตก spec เป็น ticket เล็ก ๆ พร้อมบอกว่าใบไหนบล็อกใบไหน | งานใหญ่ commit เดียวคือ review ไม่ได้ |
-| `implement` | ลงมือทำทีละ ticket | — |
+| `implement` | ลงมือทำทีละ ticket (เช็ก blast radius ก่อนแก้ทุกไฟล์) | รายชื่อ caller ที่ grep ไว้ = ตัวเลือก regression case ตอน review |
 | `code-review` | review diff ทั้งก้อน (มี sub-agent แยก Standards / Spec ในตัว) | คนเขียนไม่ควรเป็นคนตรวจคนเดียว |
-| `scribe` | บันทึกลง Obsidian vault ของโปรเจกต์ (เขียนเอง — ส่วนที่ 8 ถ้าไม่ใช้ Obsidian) | รอบหน้า `grill-with-docs` จะได้อ่านว่ารอบก่อนทำอะไรไว้ |
-| `ponytail` | กันงาน over-engineer ระหว่างเขียนโค้ด | chain มีขั้นตอนเยอะ = โมเดลมีแนวโน้มสร้างของเกินจำเป็น |
+| `scribe` | บันทึกลง Obsidian vault ของโปรเจกต์ (เขียนเอง — ส่วนที่ 8 ถ้าไม่ใช้ Obsidian) | รอบหน้า **step 0** จะ grep โน้ตพวกนี้ก่อนคิดอะไรเลย |
+| `codex-review` | ขอความเห็นที่สองตอนงานเป็น high stakes (เงิน, auth, migration, ลบข้อมูล, network, PII) | คนเขียนไม่ใช่ตาคู่ที่สอง |
+| `superpowers:systematic-debugging` | เรียกเมื่อแก้อาการเดิมพลาด 2 ครั้ง (two-strike) | ครั้งที่ 3 แบบเดา = ลูป และซากของ 2 ครั้งแรกทำให้วิเคราะห์เพี้ยน |
 | `frontend-design` | ทิศทางงานออกแบบ เรียกก่อนเขียน spec ที่มี UI | กันหน้าจอหน้าตา "AI generic" |
 | `impeccable` | เครื่องมือ UI หลักของ chain — ดูหัวข้อถัดไป | เป็นตัวที่ทำให้ UI ถูก gate จริง ไม่ใช่แค่เขียนในกฎ |
+
+## Step 0 — ก่อนขั้นที่ 1 ทั้งสอง chain ทำ 4 อย่างที่ถูกมาก
+
+1. **ปัก `BASE`** ด้วย `git rev-parse HEAD` — review ตอนท้าย diff `BASE...HEAD` เสมอ
+   ไม่ใช้ `HEAD~1` ไม่เดา และไม่ถาม user ซ้ำ
+2. **อ่านโน้ตที่รอบก่อนเขียนไว้** — grep `Changelog/` ใน vault ด้วยชื่อ module / route /
+   table ที่กำลังจะแตะ แล้วอ่าน 2–3 ใบที่เกี่ยว **ก่อนจะมีความเห็นอะไร** หัวข้อ
+   "Impact / watch-outs" ในโน้ตคือกับดักที่ทำให้รอบก่อนต้องแก้ซ้ำ
+3. **TodoWrite** ขั้นละ 1 todo — เป็นความจำของ chain ภายใน session
+4. **เขียน `.scratch/<slug>/CHAIN.md`** — `BASE` อยู่หัวไฟล์ ขั้นละ 1 checkbox
+   ถ้าไฟล์นี้มีอยู่แล้ว (session หลุด / เปิดใหม่) ให้เริ่มที่ช่องแรกที่ยังไม่ติ๊ก
+   **ไม่ใช่เริ่ม chain ใหม่ทั้งหมด**
 
 ---
 
@@ -59,7 +72,10 @@ chain ใช้มัน **สองจุด** และเป็นสอง�
 | จุดที่เรียก | เรียกทำไม |
 |---|---|
 | **ก่อนเขียน spec** (ตอนงานแตะ UI) | ให้มันช่วยตั้ง `## Design direction` — โครงหน้าจอ, hierarchy, token ที่จะใช้ |
-| **ก่อน `code-review`** | ให้มันไล่ตรวจ UI diff เทียบกฎ ทีละข้อ แบบอ่านโค้ด ไม่เปิด browser |
+| **ก่อน `code-review`** | ให้มันไล่ตรวจ UI diff เทียบกฎ ทีละข้อ แบบอ่านโค้ด (static) |
+
+`impeccable` gate **หน้าตา** เท่านั้น ส่วน "หน้านั้นรันได้จริงไหม" เป็นของ
+`rules/runtime-verification.md` — เปิด Chrome จริงด้วย Playwright แล้ว console ต้องว่าง
 
 มันมี sub-command ในตัว สั่งเจาะจงได้ เช่น
 `impeccable shape <target>` (วางโครง), `impeccable craft <target>` (ลงมือทำ),
@@ -100,7 +116,8 @@ restart Claude Code แล้วพิมพ์ `/feature` หรือ `/fix` �
 |---|---|
 | `code-review`, `frontend-design` | official marketplace ของ Claude — `/plugin` |
 | `impeccable` | `npx impeccable` |
-| `ponytail` | marketplace ของมันเอง — `/plugin install ponytail` |
+| `codex-review` | ของใครของมัน — chain เรียกเฉพาะงาน high stakes ถ้าไม่มีให้เขียนในรายงานว่างานนี้ไม่ได้ตาคู่ที่สอง |
+| `superpowers` | marketplace ของมันเอง — chain ใช้ `superpowers:systematic-debugging` ตอน two-strike |
 | `grill-with-docs`, `to-spec`, `to-tickets`, `implement` | ชุด skill ของ Matt Pocock (`/setup-matt-pocock-skills`) |
 | `claude-obsidian` | เฉพาะคนใช้ Obsidian — `scribe` เรียกเพื่อให้ syntax ถูก |
 
@@ -127,82 +144,149 @@ disable-model-invocation: true
 
 # feature (hard chain)
 
-> **UI work? Read the Frontend lane section below before step 1.** It is binding for
-> any step that lays out controls or builds a screen.
+Six steps, one session, no stopping. `/feature` typed once approves all six.
+**UI work? Read the Frontend lane before step 1.**
 
-Run these skills **in order**, in this same session. Invoke each one with the Skill tool —
-do not work from memory of what it does. No extra subagent layer beyond what each skill
-already spawns internally (`code-review` has its own parallel Standards/Spec sub-agents).
-If a skill is missing on this machine, say so and stop — do not silently skip it.
+## Step 0 — four cheap things, before any analysis
 
-1. **`grill-with-docs`** — stress-test the plan against the codebase and existing docs
-   before writing anything down.
-2. **`to-spec`** — turn the grilled plan into a spec.
-   - No-tracker fallback: if the project has no `docs/agents/issue-tracker.md`,
-     write the spec to `.scratch/<feature-slug>/spec.md` instead of publishing.
-3. **`to-tickets`** — break the spec into tracer-bullet tickets. Same no-tracker
-   fallback (it already writes to `.scratch/<feature-slug>/issues/`).
-4. **`implement`** — work the frontier (tickets whose blockers are all done) until every
-   ticket is done:
-   - Invoke **`ponytail`** before the first line of code and keep it in force: no
-     abstraction, boilerplate, config or dependency nobody asked for.
-   - Read each ticket, then explore the codebase for the concrete file list it touches —
-     `to-tickets` deliberately omits paths.
-   - One ticket at a time. Do not roll several tickets into one commit.
-   - **Re-read your own diff, then run the project's typecheck/lint/tests on the
-     affected area.** No output, no acceptance.
-   - Commit, same as `implement` normally does.
-5. **`code-review`** — one pass over the full diff since the feature/branch start.
-   Never skip it because you wrote the diff yourself; lean on its sub-agents and be
-   harder on yourself, not softer.
-6. **`scribe`** — record the run (goal, spec, what changed, review outcome). Runs last,
-   always, even if the review cap stopped further fixing.
+1. **Pin the base.** `git rev-parse HEAD` → this is `BASE`. Every review later diffs
+   `BASE...HEAD`. Never `HEAD~1`, never guess, never ask the user for it again.
+2. **Read what past runs already learned.** `scribe` has been writing changelog notes
+   into this project's Obsidian vault every run — that is the chain's long-term memory:
+   ```bash
+   vault=$(dirname "$(find . -maxdepth 3 -name .obsidian -type d 2>/dev/null | head -1)")
+   ls -t "$vault/Changelog" | head -20
+   grep -rl "<the module/route/table you are about to touch>" "$vault/Changelog"
+   ```
+   Read the 2–3 notes that touch this area **before forming any opinion**. Their
+   "Impact / watch-outs" sections are exactly the traps that caused past rework.
+   Re-deriving what a note already recorded *is* the loop. No vault → skip, say so once.
+3. **TodoWrite** — one todo per numbered step below. That list is the chain's memory
+   within the session.
+4. **Write `.scratch/<feature-slug>/CHAIN.md`** — `BASE` at the top, one checkbox per
+   step. Tick each on completion. **Resuming:** if this file already exists, start at
+   the first unchecked box; do not restart the chain.
+
+## The chain
+
+Invoke each named skill with the `Skill` tool — the step *is* the skill, don't run it
+from memory. Finish a step → tick its todo and **start the next in the same turn**. A
+sub-skill's own hand-off tail ("now run /code-review") does not end the chain.
+
+1. **`grill-with-docs`** — stress-test the plan against the codebase and docs.
+   **Grill cap:** questions the codebase can answer are not questions — go read.
+   What is left, ask in **batches of up to 5**, each with your recommended answer,
+   **max 2 batches**. Anything still open after that: decide it yourself and record it
+   under `## Assumptions`.
+2. **`to-spec`** — turn the grilled plan into a spec. End the spec with an
+   `## Assumptions` block listing every decision you made instead of asking.
+3. **`to-tickets`** — tracer-bullet tickets with blocking edges.
+4. **`implement`** — work the frontier until every ticket is done. **Claude edits
+   directly.**
+   - **Blast radius first.** Before editing a file, grep the callers/dependents of every
+     symbol, route, table or component you are about to change, and write that list into
+     `CHAIN.md`. Reading before editing is what stops the rewrite loop — and this exact
+     list picks the 3 regression cases at step 5.
+   - Run the project's typecheck/lint/tests on the affected area. No output, no acceptance.
+   - **Two-strike rule:** if a fix for the same symptom fails twice, **stop editing**.
+     `git checkout --` the files back to the last green commit, then invoke
+     `superpowers:systematic-debugging`. A third blind attempt on the same hypothesis
+     is the loop, and the debris of the first two corrupts the next analysis.
+   - Commit per ticket, small.
+5. **`code-review`** — one pass over `BASE...HEAD` (three-dot). Hand it `BASE`; it must
+   never ask. Three axes: Standards, Spec, **Correctness**.
+   - Tick the acceptance-criteria boxes in `.scratch/<feature-slug>/issues/*.md` against
+     what actually landed. An unticked box is a Spec finding.
+   - **Then verify it runs**, per `${CLAUDE_PLUGIN_ROOT}/rules/runtime-verification.md`: load the
+     changed surface in the system Chrome via `npx playwright ... --channel=chrome`,
+     plus exactly **3 nearby regression cases** (from the blast-radius list). Console
+     must be empty. Full-system sweep only if the user explicitly asked.
+   - **High stakes** (money, auth/authorization, migrations, destructive paths, external
+     network, PII) → also run `codex-review`. The author is not independent eyes.
+6. **`scribe`** — record the run in the project's Obsidian vault. **Runs last, always**,
+   even after the cap stopped further fixing. Write the watch-outs honestly: step 0 of
+   the *next* run reads them.
 
 ## If a chain skill is missing on this machine
 
-`to-spec`, `to-tickets`, `implement`, `grill-with-docs`, `code-review`, `frontend-design`,
-`impeccable` and `ponytail` are NOT shipped with this plugin — see the README for where to
-get them. If one is missing, say which one, then continue with the inline fallback rather
-than pretending the step happened:
+The named sub-skills are NOT shipped with this plugin — see the README for where to get
+them. If one is missing, say which one, then continue with the inline fallback rather than
+pretending the step happened:
 
 | missing | fallback |
 |---|---|
-| `grill-with-docs` | interview the user about the plan against the codebase yourself, then continue |
+| `grill-with-docs` | grill the plan against the codebase yourself, batched and capped as above |
 | `to-spec` | write the spec to `.scratch/<slug>/spec.md` yourself, same headings |
 | `to-tickets` | list the tickets in `.scratch/<slug>/issues/` yourself, one file each, each naming its blockers |
 | `implement` | just build it, keeping every rule in this file |
-| `code-review` | review the diff yourself against the spec and the repo's standards — never skip the pass |
-| `ponytail` | apply the rule by hand: no abstraction, boilerplate, config or dependency nobody asked for |
-| `frontend-design` / `impeccable` | gate the UI against the rules file below by hand |
+| `code-review` | review `BASE...HEAD` yourself on all three axes — never skip the pass |
+| `codex-review` | get the second opinion some other way, or record in the report that high-stakes code got none |
+| `frontend-design` / `impeccable` | gate the UI against the rules files by hand |
+| `superpowers:systematic-debugging` | write the hypothesis list down before the third attempt, by hand |
+
+## Who answers questions (this overrides the sub-skills)
+
+Sub-skills contain "ask the user and wait" lines written for standalone use. Inside the
+chain, only these reach the user:
+
+| Sub-skill gate | Inside the chain |
+|---|---|
+| `grill-with-docs` interview | **Ask** — batched and capped as above |
+| `to-spec` "confirm the seams" | **Decide.** Write the seams + why into the spec |
+| `to-tickets` "quiz the user, iterate until approved" | **Decide.** List the tickets in the spec and move on |
+| `code-review` "which fixed point?" | Already answered: `BASE`. Never ask |
+| any "tell the user to run `/setup-matt-pocock-skills`" | **Ignore** — not installed. Use the local `.scratch/` fallback silently |
+| anything else | Ask **only** if proceeding either way would waste the work |
+
+That is the trade: no stopping, in exchange for full disclosure. Every decision made
+instead of asking appears in `## Assumptions` and in the final report.
 
 ## Frontend lane (BINDING when the work touches UI)
 
 Triggers on any step that lays out controls, builds or changes a screen, or restyles
-existing UI — web, mobile, LINE Mini App, kiosk, dashboard. If in doubt, it triggers.
+existing UI — web, mobile, LINE Mini App, kiosk, dashboard. In doubt = triggered.
+Claude builds it directly, and still commits and still gets reviewed.
 
-**Before the spec is written**, invoke `frontend-design` and `impeccable`, then settle a
-`## Design direction` in the spec: user, goal, primary action, information hierarchy,
-then the concrete tokens — spacing scale (8px), type scale, colour tokens, radius scale,
-and the existing components being reused. Read the project's existing tokens first and
-cite the file; do not invent a parallel palette. "Consistent spacing" is not a design
-direction — actual values are.
+**Before the spec:** invoke `frontend-design` and `impeccable`, settle a
+`## Design direction` in the spec — user, goal, primary action, information hierarchy,
+then concrete tokens: spacing scale (8px), type scale, colour tokens, radius scale, the
+existing components being reused. Read the project's own tokens first and cite the file;
+never invent a parallel palette. "Consistent spacing" is not a direction — values are.
 
-**Before code-review**, run `impeccable` over the UI diff and gate it against
-`${CLAUDE_PLUGIN_ROOT}/rules/frontend-design-rules.md` (this plugin ships it; if the
-variable is not expanded for you, read `../../rules/frontend-design-rules.md` relative to
-this skill's own directory) item by item, statically — markup, styles,
-tokens; no browser, no screenshots. A missed accessibility floor (rules 8, 9, 10, 17, 19)
-or a missing loading/empty/error state is a FAIL on its own and goes back for a fix.
-Aesthetic disagreement that breaks no rule is a note, not a FAIL — the user decides taste.
+**Before code-review:** run `impeccable` over the UI diff and gate it against
+`${CLAUDE_PLUGIN_ROOT}/rules/frontend-design-rules.md` item by item, statically. A missed
+accessibility floor (rules 8, 9, 10, 17, 19) or a missing loading/empty/error state is a
+FAIL on its own. Static gates the LOOK; `${CLAUDE_PLUGIN_ROOT}/rules/runtime-verification.md` gates
+whether it RUNS. Aesthetic disagreement that breaks no rule is a note — taste is the
+user's call.
 
-The review cap below still applies: fix once, re-review once.
+## Review cap — stop on "nothing new", not on a counter
 
-**Review cap:** if `code-review` finds anything, fix it once and re-review once. Stop
-after that second review regardless of outcome — do not loop further. Report the result
-to the user and hand control back.
+Round 1 finds things → fix → round 2. **Stop when round 2 surfaces nothing new.** A
+repeat of a round-1 finding is not new. One genuinely new finding gets one more fix, and
+that is the end.
 
-If a step surfaces that this was actually small enough for `/fix`, say so, but don't
-switch mid-chain — finish the current one.
+- A console error, a failing test or a broken build is **not** a review finding and the
+  cap does not apply to it. Keep fixing until it runs.
+- If the chain ends with an unfixed FAIL, the final report **starts** with FAIL. Never
+  write "done" over a known failure.
+
+Rules paths above are `${CLAUDE_PLUGIN_ROOT}/rules/...` — this plugin ships them. If
+the variable is not expanded for you, read `../../rules/<file>` relative to this skill's
+own directory.
+
+## Token discipline
+
+Don't re-read a file already in context, don't re-run a grep you already ran, don't dump
+a whole file when `sed -n '120,180p'` answers it. Sub-agents exist so their file dumps
+stay out of this context — use their conclusions, don't re-verify by re-reading. The
+Obsidian changelog exists so you don't re-derive last week's analysis.
+
+## Report once, at the end, after scribe
+
+FAIL first if anything is unfixed, then: what shipped (one line) · assumptions decided
+without asking · findings per axis and what was fixed · changed surface / 3 regression
+cases / console · the changelog note path.
 ~~~~~
 
 ## `skills/fix/SKILL.md`
@@ -216,76 +300,144 @@ disable-model-invocation: true
 
 # fix (easy chain)
 
-> **UI work? Read the Frontend lane section below before step 1.** It is binding for
-> any step that lays out controls or builds a screen.
+Four steps, one session, no stopping. `/fix` typed once approves all four.
+**UI work? Read the Frontend lane before step 1.**
 
-Run these skills **in order**, in this same session. Invoke each one with the Skill tool —
-do not work from memory of what it does. If a skill is missing on this machine, say so
-and stop — do not silently skip it.
+## Step 0 — four cheap things, before any analysis
 
-1. **`to-spec`** — synthesize a spec from the current conversation (no interview).
-   - No-tracker fallback: if the project has no `docs/agents/issue-tracker.md`,
-     write the spec to `.scratch/<feature-slug>/spec.md` instead of publishing.
-2. **`implement`** — build it:
-   - Invoke **`ponytail`** before the first line of code and keep it in force: no
-     abstraction, boilerplate, config or dependency nobody asked for.
-   - Read the spec, then explore the codebase for the concrete file list it touches —
-     `to-spec` deliberately omits paths.
-   - **Re-read your own diff, then run the project's typecheck/lint/tests on the
-     affected area.** No output, no acceptance.
-   - Commit, same as `implement` normally does.
-3. **`code-review`** — one pass over the diff since the spec/feature start. Never skip it
-   because you wrote the diff yourself; lean on its sub-agents and be harder on yourself,
-   not softer.
-4. **`scribe`** — record the run (goal, spec, what changed, review outcome). Runs last,
-   always, even if the review cap stopped further fixing.
+1. **Pin the base.** `git rev-parse HEAD` → this is `BASE`. The review later diffs
+   `BASE...HEAD`. Never `HEAD~1`, never guess, never ask the user for it again.
+2. **Read what past runs already learned.** `scribe` has been writing changelog notes
+   into this project's Obsidian vault every run — that is the chain's long-term memory:
+   ```bash
+   vault=$(dirname "$(find . -maxdepth 3 -name .obsidian -type d 2>/dev/null | head -1)")
+   ls -t "$vault/Changelog" | head -20
+   grep -rl "<the module/route/table you are about to touch>" "$vault/Changelog"
+   ```
+   Read the 2–3 notes that touch this area **before forming any opinion**. Their
+   "Impact / watch-outs" sections are exactly the traps that caused past rework.
+   Re-deriving what a note already recorded *is* the loop. No vault → skip, say so once.
+3. **TodoWrite** — one todo per numbered step below.
+4. **Write `.scratch/<feature-slug>/CHAIN.md`** — `BASE` at the top, one checkbox per
+   step. Tick each on completion. **Resuming:** if this file already exists, start at
+   the first unchecked box; do not restart the chain.
+
+## The chain
+
+Invoke each named skill with the `Skill` tool — the step *is* the skill, don't run it
+from memory. Finish a step → tick its todo and **start the next in the same turn**. A
+sub-skill's own hand-off tail ("now run /code-review") does not end the chain.
+
+1. **`to-spec`** — synthesize a spec from the conversation, no interview. End it with an
+   `## Assumptions` block listing every decision you made instead of asking.
+2. **`implement`** — build it. **Claude edits directly.**
+   - **Blast radius first.** Before editing a file, grep the callers/dependents of every
+     symbol, route, table or component you are about to change, and write that list into
+     `CHAIN.md`. Reading before editing is what stops the rewrite loop — and this exact
+     list picks the 3 regression cases at step 3.
+   - Run the project's typecheck/lint/tests on the affected area. No output, no acceptance.
+   - **Two-strike rule:** if a fix for the same symptom fails twice, **stop editing**.
+     `git checkout --` the files back to the last green commit, then invoke
+     `superpowers:systematic-debugging`. A third blind attempt on the same hypothesis
+     is the loop, and the debris of the first two corrupts the next analysis.
+   - Commit.
+3. **`code-review`** — one pass over `BASE...HEAD` (three-dot). Hand it `BASE`; it must
+   never ask. Three axes: Standards, Spec, **Correctness**.
+   - **Then verify it runs**, per `${CLAUDE_PLUGIN_ROOT}/rules/runtime-verification.md`: load the
+     changed surface in the system Chrome via `npx playwright ... --channel=chrome`,
+     plus exactly **3 nearby regression cases** (from the blast-radius list). Console
+     must be empty. Full-system sweep only if the user explicitly asked.
+   - **High stakes** (money, auth/authorization, migrations, destructive paths, external
+     network, PII) → also run `codex-review`. The author is not independent eyes.
+4. **`scribe`** — record the run in the project's Obsidian vault. **Runs last, always**,
+   even after the cap stopped further fixing. Write the watch-outs honestly: step 0 of
+   the *next* run reads them.
 
 ## If a chain skill is missing on this machine
 
-`to-spec`, `to-tickets`, `implement`, `grill-with-docs`, `code-review`, `frontend-design`,
-`impeccable` and `ponytail` are NOT shipped with this plugin — see the README for where to
-get them. If one is missing, say which one, then continue with the inline fallback rather
-than pretending the step happened:
+The named sub-skills are NOT shipped with this plugin — see the README for where to get
+them. If one is missing, say which one, then continue with the inline fallback rather than
+pretending the step happened:
 
 | missing | fallback |
 |---|---|
-| `grill-with-docs` | interview the user about the plan against the codebase yourself, then continue |
 | `to-spec` | write the spec to `.scratch/<slug>/spec.md` yourself, same headings |
-| `to-tickets` | list the tickets in `.scratch/<slug>/issues/` yourself, one file each, each naming its blockers |
 | `implement` | just build it, keeping every rule in this file |
-| `code-review` | review the diff yourself against the spec and the repo's standards — never skip the pass |
-| `ponytail` | apply the rule by hand: no abstraction, boilerplate, config or dependency nobody asked for |
-| `frontend-design` / `impeccable` | gate the UI against the rules file below by hand |
+| `code-review` | review `BASE...HEAD` yourself on all three axes — never skip the pass |
+| `codex-review` | get the second opinion some other way, or record in the report that high-stakes code got none |
+| `frontend-design` / `impeccable` | gate the UI against the rules files by hand |
+| `superpowers:systematic-debugging` | write the hypothesis list down before the third attempt, by hand |
+
+## Who answers questions (this overrides the sub-skills)
+
+Sub-skills contain "ask the user and wait" lines written for standalone use. Inside the
+chain, only these reach the user:
+
+| Sub-skill gate | Inside the chain |
+|---|---|
+| `to-spec` "confirm the seams" | **Decide.** Write the seams + why into the spec |
+| `code-review` "which fixed point?" | Already answered: `BASE`. Never ask |
+| any "tell the user to run `/setup-matt-pocock-skills`" | **Ignore** — not installed. Use the local `.scratch/` fallback silently |
+| anything else | Ask **only** if proceeding either way would waste the work |
+
+That is the trade: no stopping, in exchange for full disclosure. Every decision made
+instead of asking appears in `## Assumptions` and in the final report.
 
 ## Frontend lane (BINDING when the work touches UI)
 
 Triggers on any step that lays out controls, builds or changes a screen, or restyles
-existing UI — web, mobile, LINE Mini App, kiosk, dashboard. If in doubt, it triggers.
+existing UI — web, mobile, LINE Mini App, kiosk, dashboard. In doubt = triggered.
+Claude builds it directly, and still commits and still gets reviewed.
 
-**Before the spec is written**, invoke `frontend-design` and `impeccable`, then settle a
-`## Design direction` in the spec: user, goal, primary action, information hierarchy,
-then the concrete tokens — spacing scale (8px), type scale, colour tokens, radius scale,
-and the existing components being reused. Read the project's existing tokens first and
-cite the file; do not invent a parallel palette. "Consistent spacing" is not a design
-direction — actual values are.
+**Before the spec:** invoke `frontend-design` and `impeccable`, settle a
+`## Design direction` in the spec — user, goal, primary action, information hierarchy,
+then concrete tokens: spacing scale (8px), type scale, colour tokens, radius scale, the
+existing components being reused. Read the project's own tokens first and cite the file;
+never invent a parallel palette. "Consistent spacing" is not a direction — values are.
 
-**Before code-review**, run `impeccable` over the UI diff and gate it against
-`${CLAUDE_PLUGIN_ROOT}/rules/frontend-design-rules.md` (this plugin ships it; if the
-variable is not expanded for you, read `../../rules/frontend-design-rules.md` relative to
-this skill's own directory) item by item, statically — markup, styles,
-tokens; no browser, no screenshots. A missed accessibility floor (rules 8, 9, 10, 17, 19)
-or a missing loading/empty/error state is a FAIL on its own and goes back for a fix.
-Aesthetic disagreement that breaks no rule is a note, not a FAIL — the user decides taste.
+**Before code-review:** run `impeccable` over the UI diff and gate it against
+`${CLAUDE_PLUGIN_ROOT}/rules/frontend-design-rules.md` item by item, statically. A missed
+accessibility floor (rules 8, 9, 10, 17, 19) or a missing loading/empty/error state is a
+FAIL on its own. Static gates the LOOK; `${CLAUDE_PLUGIN_ROOT}/rules/runtime-verification.md` gates
+whether it RUNS. Aesthetic disagreement that breaks no rule is a note — taste is the
+user's call.
 
-The review cap below still applies: fix once, re-review once.
+## Review cap — stop on "nothing new", not on a counter
 
-**Review cap:** if `code-review` finds anything, fix it once and re-review once. Stop
-after that second review regardless of outcome — do not loop further. Report the result
-to the user and hand control back.
+Round 1 finds things → fix → round 2. **Stop when round 2 surfaces nothing new.** A
+repeat of a round-1 finding is not new. One genuinely new finding gets one more fix, and
+that is the end.
 
-**Escalate, don't force it:** if partway through this turns out to need grilling or a
-ticket breakdown after all, stop and suggest `/feature` instead of pushing it through the
-easy chain.
+- A console error, a failing test or a broken build is **not** a review finding and the
+  cap does not apply to it. Keep fixing until it runs.
+- If the chain ends with an unfixed FAIL, the final report **starts** with FAIL. Never
+  write "done" over a known failure.
+
+## Escalate on a measured trigger, don't force it
+
+Switch to `/feature` — stop and say so, don't push through — when any of these hits:
+
+- the diff spreads past **5 files** or a second unplanned surface appears
+- `implement` hits the two-strike rule **twice** on different symptoms
+- step 0's Obsidian notes show this area has been reworked before
+- the spec cannot be written without a real interview
+
+Rules paths above are `${CLAUDE_PLUGIN_ROOT}/rules/...` — this plugin ships them. If
+the variable is not expanded for you, read `../../rules/<file>` relative to this skill's
+own directory.
+
+## Token discipline
+
+Don't re-read a file already in context, don't re-run a grep you already ran, don't dump
+a whole file when `sed -n '120,180p'` answers it. Sub-agents exist so their file dumps
+stay out of this context — use their conclusions, don't re-verify by re-reading. The
+Obsidian changelog exists so you don't re-derive last week's analysis.
+
+## Report once, at the end, after scribe
+
+FAIL first if anything is unfixed, then: what shipped (one line) · assumptions decided
+without asking · findings per axis and what was fixed · changed surface / 3 regression
+cases / console · the changelog note path.
 ~~~~~
 
 **สังเกต frontmatter:** `disable-model-invocation: true` สำคัญ — แปลว่าเรียกได้ด้วย `/` เท่านั้น
@@ -306,7 +458,9 @@ easy chain.
 skills/feature/SKILL.md           ← hard chain
 skills/fix/SKILL.md               ← easy chain
 skills/scribe/SKILL.md            ← ตัวบันทึก changelog
-rules/*.md                        ← กฎ UI ที่ chain ใช้ gate
+rules/frontend-design-rules.md    ← 20 ข้อ ที่ frontend lane gate ทีละข้อ
+rules/ux-ui-design-rules.md       ← ฉบับยาว 70 ข้อ
+rules/runtime-verification.md     ← กฎเปิด browser จริง: การเปลี่ยน + 3 regression case
 README.md  TEACHING.md
 ```
 
@@ -353,14 +507,18 @@ cd implement-team
 
 ทุกข้อในนี้มีที่มาจากของที่เคยพังจริง ตอนสอนให้เล่าที่มาด้วย ไม่งั้นคนจะตัดทิ้ง
 
-## 1. Review cap — แก้ 1 รอบ + review ซ้ำ 1 รอบ แล้วจบ
+## 1. Review cap — หยุดตอน "ไม่มีของใหม่" ไม่ใช่หยุดตามตัวนับ
 
 chain รุ่นก่อนหน้า (team-chain) ให้ reviewer กับ builder คุยกันจนกว่าจะผ่าน
 ผลคือติดลูป 4 รอบ reviewer หาเรื่องใหม่ได้เรื่อย ๆ โดยโค้ดไม่ได้ดีขึ้น เผา token ฟรี
 สุดท้ายรื้อทิ้งทั้งระบบ
 
-**ดังนั้น: review เจอปัญหา → แก้ 1 รอบ → review ซ้ำ 1 รอบ → หยุด ไม่ว่าผลจะออกมายังไง**
-แล้วรายงาน user ให้ตัดสินใจเอง คนเป็นคนเบรก ไม่ใช่โมเดล
+**ดังนั้น: รอบ 1 เจอของ → แก้ → รอบ 2 ถ้าไม่มีของใหม่ = จบ**
+ของเดิมที่โผล่ซ้ำไม่นับว่าใหม่ ถ้ารอบ 2 เจอของใหม่จริง แก้ได้อีกครั้งเดียวแล้วจบ
+
+**แต่ console error / test แดง / build พัง ไม่ใช่ review finding** — cap ไม่คุ้มพวกนี้
+แก้จนรันได้ ถ้าจบ chain แล้วยังมี FAIL ค้าง รายงาน**เริ่ม**ด้วยคำว่า FAIL
+ห้ามเขียนว่า "เสร็จ" ทับความพังที่รู้อยู่
 
 ## 2. `scribe` รันเป็นขั้นสุดท้ายเสมอ
 
@@ -377,14 +535,27 @@ component เดิมที่จะ reuse
 คำว่า "ใช้ spacing ให้สม่ำเสมอ" ไม่ใช่ design direction — `8/16/24/32` คือ design direction
 และต้องอ่าน token ที่โปรเจกต์มีอยู่ก่อน แล้วอ้างชื่อไฟล์ ห้ามคิด palette ใหม่ขนานกับของเดิม
 
-## 4. Gate UI แบบ static เท่านั้น
+## 4. Static gate หน้าตา / browser gate ว่ามันรัน
 
 ก่อน `code-review` ให้รัน `impeccable` ทับ UI diff แล้วไล่กฎทีละข้อจาก **markup, style, token**
-— ไม่เปิด browser ไม่ screenshot คนเป็นคนดูหน้าจอจริง เครื่องตรวจแค่สิ่งที่อ่านได้จากโค้ด
+— contrast กับขนาด target คำนวณจากค่า token จริง ซึ่งแม่นกว่ามองจาก screenshot
 
 ข้อที่พลาดแล้วนับเป็น FAIL ทันที (accessibility floor): ข้อ 8, 9, 10, 17, 19
 บวกกับ "ขาด loading / empty / error state"
 ส่วนที่ไม่ผิดกฎแต่ไม่ถูกใจ = note ไม่ใช่ FAIL — เรื่องรสนิยมเป็นสิทธิ์ของ user
+
+**แต่ static ตอบไม่ได้ว่าหน้านั้นรันได้จริงไหม** เวอร์ชันก่อนหน้าเขียนว่า "ไม่เปิด
+browser" แล้วเสียเวลาไปหนึ่งวัน: `Cannot access 'openConfirmDialog' before
+initialization` ฆ่า DOMContentLoaded ทั้งตัว ทุกหน้าค้างที่ skeleton ขณะที่ static
+gate 25 ข้อ, test 703 ตัว และ code review สองแกนผ่านหมด — บั๊กซ่อนหลังเงื่อนไข
+localStorage เห็นได้จาก browser ที่มี state นั้นเท่านั้น
+
+ดังนั้นตอนนี้: โค้ดที่รันตอนโหลดหน้า ต้องเปิดหน้านั้นจริง 1 ครั้งด้วย
+`npx playwright ... --channel=chrome` (Chrome ในเครื่อง ไม่ต้องโหลดอะไร ไม่ต้อง login)
+พร้อม state/flag ที่ของใหม่ต้องพึ่ง แล้ว **console ต้องว่าง** ขอบเขตคือ
+**ของที่แก้ + 3 regression case** ที่เลือกจากรายชื่อ blast radius (caller/parent,
+sibling ที่ใช้ component-store-table เดียวกัน, flow ก่อน/หลัง) — ไม่กวาดทั้งระบบ
+ยกเว้น user สั่งเอง
 
 ## 5. Self-gate
 
@@ -398,6 +569,26 @@ component เดิมที่จะ reuse
 ไม่ใช่ "จำได้ว่ามันทำอะไร แล้วทำเอง" — skill มีการอัปเดต และเนื้อในยาวกว่าที่จำไว้เสมอ
 ถ้าเรียกไม่ได้ ให้บอก user ตรง ๆ อย่าเงียบแล้วข้าม
 
+## 7. Blast radius ก่อนแก้ + two-strike
+
+ก่อนแก้ไฟล์ ให้ grep caller/dependent ของทุก symbol, route, table, component ที่จะเปลี่ยน
+แล้วเขียนรายชื่อลง `CHAIN.md` — อ่านก่อนแก้คือสิ่งที่หยุดลูป "แก้แล้วพังที่อื่น"
+และรายชื่อนี้เองที่ใช้เลือก 3 regression case ตอน review
+
+**two-strike:** แก้อาการเดิมพลาด 2 ครั้ง = **หยุดแก้** `git checkout --` ไฟล์กลับไป commit
+ที่เขียวล่าสุด แล้วเรียก `superpowers:systematic-debugging` ครั้งที่ 3 แบบเดาคือลูป
+และซากของ 2 ครั้งแรกทำให้วิเคราะห์รอบถัดไปเพี้ยน
+
+## 8. ไม่หยุดกลางทาง แต่ต้องเปิดเผยทุกอย่างที่ตัดสินใจเอง
+
+sub-skill หลายตัวเขียนว่า "ถาม user แล้วรอ" เพราะมันถูกเขียนไว้ให้ใช้เดี่ยว ๆ
+ใน chain มีแค่ `grill-with-docs` ที่ได้ถามจริง และถามแบบมีเพดาน — **batch ละไม่เกิน 5 ข้อ
+พร้อมคำตอบที่แนะนำ สูงสุด 2 batch** ที่เหลือตัดสินใจเองแล้วเขียนลง `## Assumptions`
+ใน spec และพูดซ้ำในรายงานสุดท้าย
+
+นั่นคือดีล: ไม่หยุดถามเป็นช่วง ๆ แลกกับเปิดเผยครบ คำถามที่ codebase ตอบได้ไม่ใช่คำถาม
+— ไปอ่านโค้ด
+
 ---
 
 # ส่วนที่ 7 — ไฟล์กฎ UI (เนื้อเต็ม)
@@ -408,7 +599,7 @@ component เดิมที่จะ reuse
 # FRONTEND DESIGN RULES
 
 > **BINDING.** The short checklist every `[FRONTEND]` lane builds to and is gated
-> against. The long form is `~/.claude/rules/ux-ui-design-rules.md` (70 rules) — this
+> against. The long form is `ux-ui-design-rules.md` in the same folder (70 rules) — this
 > file is the working set; where they overlap they agree, where the long file is more
 > specific it wins.
 
@@ -438,9 +629,36 @@ component เดิมที่จะ reuse
 ## Non-negotiable floors
 
 Rules 8, 9, 10, 17, 19 are floors, not preferences. A screen that misses one is a
-FAIL finding, not a taste note. Verification is static — read the markup, styles and
-tokens; no browser, no screenshots.
+FAIL finding, not a taste note.
+
+**Design verification is static** — contrast, spacing, type scale and token use are read
+from the markup, styles and tokens. Static is BETTER than a screenshot for these: a
+contrast ratio is computed from the actual values, never judged by eye.
+
+**Whether the screen RUNS is not static and cannot be.** Before any change to code that
+executes on page load is called done, that page must be loaded once with the change live
+and the console must be empty. A script that throws during init paints its loading state
+forever, and no amount of reading the diff will show it.
+
+Loading the happy path is not enough. If the change sits inside a condition — stored
+state, a feature flag, an error branch — that condition must be created before the page
+is loaded, or the check has not run.
+
+> Amended 2026-09-17, replacing "Verification is static … no browser, no screenshots".
+> That sentence covered two different things in one breath and the second one silently
+> disappeared. It cost a day: `Cannot access 'openConfirmDialog' before initialization`
+> killed an entire DOMContentLoaded handler and left every screen painting skeletons,
+> while 25 static gates, 703 tests and a two-axis code review all passed. The defect sat
+> behind a localStorage condition, so only a browser with that state could see it — and
+> the rule forbade opening one. Driving the system Chrome via Playwright reproduces it in
+> three seconds with no download and no login, so "no browser" was never a technical
+> limit, only a policy.
 ~~~~~
+
+`rules/runtime-verification.md` เดินทางมาคู่กัน — เป็นฝั่ง "พิสูจน์ว่ามันรัน":
+เปิด Chrome ในเครื่องด้วย Playwright, ขอบเขต = ของที่แก้ + 3 regression case,
+console error นับเป็น FAIL น้ำหนักเท่าพลาด accessibility floor และรายงานต้องบอก 3 บรรทัด
+(changed surface / regression 3 เคส / console)
 
 ฉบับยาว 70 ข้อ (`ux-ui-design-rules.md`) อยู่ในโฟลเดอร์ `rules/` ครอบคลุม layout system,
 typography scale, form, empty/error state, color semantics, dashboard, healthcare,
@@ -456,12 +674,16 @@ $ claude
 ```
 
 สิ่งที่จะเกิด:
-1. Claude เรียก `to-spec` → ได้ spec (ไม่มี tracker ก็เขียนลง `.scratch/<slug>/spec.md`)
-2. งานนี้แตะ UI → เรียก `frontend-design` + `impeccable` ตั้ง `## Design direction` ก่อน
-3. เรียก `ponytail` → แล้วลงมือเขียน
-4. อ่าน diff ตัวเอง + รัน typecheck/lint/test เฉพาะส่วนที่แตะ → commit
-5. `impeccable` ไล่ UI diff เทียบกฎ → `code-review` → เจอปัญหาแก้ 1 รอบ review ซ้ำ 1 รอบ หยุด
-6. เรียก `scribe` → บันทึกลง vault → รายงานผล
+1. **Step 0** — ปัก `BASE`, grep `Changelog/` หาโน้ตที่แตะหน้ารายการลูกค้า, TodoWrite,
+   เขียน `.scratch/<slug>/CHAIN.md`
+2. `to-spec` → ได้ spec + `## Assumptions` (ไม่มี tracker ก็เขียนลง `.scratch/<slug>/spec.md`)
+3. งานนี้แตะ UI → เรียก `frontend-design` + `impeccable` ตั้ง `## Design direction` ก่อน
+4. `implement` → grep caller ของหน้านั้นลง `CHAIN.md` ก่อนแก้ → เขียน → รัน
+   typecheck/lint/test เฉพาะส่วนที่แตะ → commit
+5. `impeccable` ไล่ UI diff เทียบกฎ → `code-review` ทับ `BASE...HEAD` → เปิดหน้านั้นใน
+   Chrome จริง + 3 regression case, console ต้องว่าง → เจอของก็แก้ แล้วหยุดตอนรอบถัดไป
+   ไม่มีของใหม่
+6. `scribe` → บันทึกลง vault → รายงานครั้งเดียวตอนท้าย (FAIL ขึ้นก่อนถ้ามีของค้าง)
 
 **ระหว่างทางเราทำอะไรได้บ้าง:** กด Esc แทรกได้ตลอด chain ไม่ได้ล็อกอะไร
 มันแค่เป็นลำดับที่ Claude ถืออยู่
@@ -542,4 +764,5 @@ EOF
 
 1. มันคือลำดับการเรียก skill ที่มีอยู่แล้ว ไม่ใช่ของใหม่ — ไฟล์ markdown ไฟล์ละ 60 บรรทัด
 2. มีสองขนาดเพราะถ้ามีขนาดเดียวคนจะเลิกใช้ตอนงานเล็ก
-3. หัวใจคือ **review cap** กับ **scribe** — ตัวแรกกันลูป ตัวหลังทำให้รอบหน้าไม่เริ่มจากศูนย์
+3. หัวใจคือ **review cap**, **scribe** และ **step 0** — ตัวแรกกันลูป ตัวที่สองเขียนความจำ
+   ตัวที่สามคือตอนที่เอาความจำนั้นมาใช้จริง

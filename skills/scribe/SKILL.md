@@ -23,7 +23,6 @@ Writes one changelog note into Obsidian after a chain run finishes. Does NOT tou
    - `git diff`/`git log` for what actually changed
    - the spec (`.scratch/<slug>/spec.md`) and tickets (`.scratch/<slug>/issues/`), if any
    - the `code-review` verdict/findings from this run
-   - who wrote the diff (Claude directly, or MiniMax M3 via `minimax-tmux`)
 3. Use `claude-obsidian:obsidian-markdown` for correct frontmatter/wikilink syntax, then write ONE note at `$vault/Changelog/$(date +%F)-<short-slug>.md`:
 
    ```markdown
@@ -36,7 +35,6 @@ Writes one changelog note into Obsidian after a chain run finishes. Does NOT tou
 
    **Goal:** <what the task was>
    **Spec:** [[<spec basename, no .md>]]  (omit if no spec file exists)
-   **Built by:** <Claude / MiniMax M3 via minimax-tmux>
    **Review:** <code-review verdict — pass, or fixed-once-then-passed>
 
    ## Changed
@@ -45,6 +43,13 @@ Writes one changelog note into Obsidian after a chain run finishes. Does NOT tou
    ## Impact / watch-outs
    - <side effects, callers touched, anything future work should know>
    ```
+
+   **Write this note for a grep, not for a reader.** Step 0 of the next `/feature` or
+   `/fix` run greps `Changelog/` for the module, route, table or component it is
+   about to touch — so name those things literally in the note (real identifiers, real
+   paths), not "the booking area". A watch-out nobody can find is a rework loop next
+   month: record what actually bit you this run, including anything the review caught
+   and anything left unfixed.
 4. Link related prior changelog notes with `[[note-name]]` if any turn up.
 
 Final message: the path of the note you wrote, plus a one-line summary. Nothing else.
